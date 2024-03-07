@@ -9,6 +9,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,11 +37,13 @@ public class UserController {
         }
     }
 
+
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody UserDto userDto){
         try{
             User savedUser = userService.save(userDto);
-            LOGGER.info("Users created with id {}", savedUser.getId());
+            LOGGER.info("User created with id {}", savedUser.getId());
             return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
         }catch (Exception e){
             LOGGER.error("Something happened while retrieving users {}", e.getMessage());
