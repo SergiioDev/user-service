@@ -21,8 +21,13 @@ public class User {
     private String lastName;
 
     @Column(unique = true, length = 100)
+    private String username;
+
+    @Column(unique = true, length = 100)
     private String email;
 
     @Temporal(value = TemporalType.DATE)
     private Date birthDate;
+
+    private String password;
 }
