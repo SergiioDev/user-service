@@ -24,7 +24,7 @@ public class JwtService {
     private String secret;
 
 
-    private String createToken(User user) {
+    public String createToken(User user) {
         long expirationTimeMillis = 3600000L;
         Date issuedAt = new Date();
         Date expirationTime = new Date(issuedAt.getTime() + expirationTimeMillis);
