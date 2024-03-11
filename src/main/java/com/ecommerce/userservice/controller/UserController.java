@@ -1,5 +1,7 @@
 package com.ecommerce.userservice.controller;
 
+import com.ecommerce.userservice.exceptions.UserNotFoundException;
+import com.ecommerce.userservice.models.TokenResponse;
 import com.ecommerce.userservice.models.User;
 import com.ecommerce.userservice.models.dto.UserDto;
 import com.ecommerce.userservice.service.UserService;
@@ -9,7 +11,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,7 +39,6 @@ public class UserController {
     }
 
 
-    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody UserDto userDto){
         try{
@@ -48,6 +48,21 @@ public class UserController {
         }catch (Exception e){
             LOGGER.error("Something happened while retrieving users {}", e.getMessage());
             return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> logIn(@RequestBody UserDto userDto){
+        try {
+           TokenResponse tokenResponse = userService.logIn(userDto);
+           LOGGER.info("Token {} created for {} ",tokenResponse.getToken(), userDto.getEmail());
+            return new ResponseEntity<>(tokenResponse, HttpStatus.CREATED);
+        }catch (UserNotFoundException e) {
+            LOGGER.error("Error creating token for user {} cause: {} ", userDto.getEmail(), e.getMessage());
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }catch (DataAccessException e) {
+            LOGGER.error("Error creating token for user {} cause: {} ", userDto.getEmail(), e.getMessage());
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
