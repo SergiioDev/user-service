@@ -1,4 +1,8 @@
-## TODO
+## About this project
+This is the first service of the backend for an e-commerce app which will be based on microservices
 
-- Create postgresql database on AWS
-- Create application.yml profiles
+### RoadMap
+ - Finish the user service
+ - Create Product service
+ - Create Spring Cloud gateway project
+ - Deploy to AWS and add DataDog for monitoring and observability
