@@ -18,7 +18,6 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
 
-    @Autowired
     public JwtFilter(JwtService jwtService) {
         this.jwtService = jwtService;
     }
@@ -26,7 +25,7 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = request.getHeader("Authorization");
-        if(token != null && jwtService.validateToken(token)){
+        if(token != null && jwtService.isTokenValid(token)){
             filterChain.doFilter(request, response);
         } else {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -37,6 +36,5 @@ public class JwtFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         return ((path.equals(BASE_PATH + "/users") && request.getMethod().equals("POST")) || path.equals(BASE_PATH + "/auth/login"));
     }
-
 
 }

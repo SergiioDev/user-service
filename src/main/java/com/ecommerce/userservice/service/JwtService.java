@@ -1,14 +1,15 @@
 package com.ecommerce.userservice.service;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.ecommerce.userservice.exceptions.InvalidPayloadException;
 import com.ecommerce.userservice.exceptions.UserNotFoundException;
 import com.ecommerce.userservice.models.TokenResponse;
 import com.ecommerce.userservice.models.User;
 import com.ecommerce.userservice.models.dto.UserDto;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -18,18 +19,20 @@ import java.util.Optional;
 
 @Service
 public class JwtService {
-
-    @Value("${spring.custom.secret}")
-    private String secret;
-
     private final UserService userService;
 
-    public JwtService(UserService userService){
+    private final JWTVerifier jwtVerifier;
+
+    private final Algorithm algorithm;
+
+    public JwtService(UserService userService, Algorithm algorithm, JWTVerifier jwtVerifier){
         this.userService = userService;
+        this.algorithm = algorithm;
+        this.jwtVerifier = jwtVerifier;
     }
 
     public String createToken(User user) {
-        long expirationTimeMillis = 3600000L;
+        long expirationTimeMillis = 60000L; // 1 minute
         Date issuedAt = new Date();
         Date expirationTime = new Date(issuedAt.getTime() + expirationTimeMillis);
 
@@ -39,7 +42,7 @@ public class JwtService {
                 .withIssuedAt(issuedAt)
                 .withExpiresAt(expirationTime)
                 .withJWTId(generateSecureRandomJwtId())
-                .sign(Algorithm.HMAC512(secret));
+                .sign(algorithm);
     }
 
 
@@ -50,8 +53,8 @@ public class JwtService {
         return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
     }
 
-    public Long getUserIdClaim(String token) throws InvalidPayloadException {
-        return Optional.of(JWT.decode(token))
+    public Long getUserIdClaim(DecodedJWT decodedJWT) throws InvalidPayloadException {
+        return Optional.ofNullable(decodedJWT)
                 .map(d -> d.getClaim("user_id"))
                 .map(Claim::asLong)
                 .orElseThrow(() -> new InvalidPayloadException("Invalid payload"));
@@ -66,15 +69,16 @@ public class JwtService {
                .build();
     }
 
-
-    public Boolean validateToken(String token) {
-        try{
-            Long id = getUserIdClaim(token);
-            return userService.getById(id) != null;
-        }catch (Exception e) {
-            e.printStackTrace();
-            return false;
+    public boolean isTokenValid(String jwtToken) {
+        try {
+            DecodedJWT decodedJWT = jwtVerifier.verify(jwtToken);
+            Long id = getUserIdClaim(decodedJWT);
+            userService.getById(id);
+            return true;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
+        return false;
     }
 
 }
