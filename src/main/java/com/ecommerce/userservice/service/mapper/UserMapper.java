@@ -12,6 +12,7 @@ public class UserMapper {
                 .lastName(userDto.getLastName())
                 .email(userDto.getEmail())
                 .birthDate(userDto.getBirthDate())
+                .password(userDto.getPassword())
                 .build();
     }
 }
