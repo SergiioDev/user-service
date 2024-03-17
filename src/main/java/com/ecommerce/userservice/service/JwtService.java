@@ -5,7 +5,6 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.ecommerce.userservice.controller.AuthController;
 import com.ecommerce.userservice.exceptions.InvalidPayloadException;
 import com.ecommerce.userservice.exceptions.UserNotFoundException;
 import com.ecommerce.userservice.models.TokenResponse;
@@ -36,7 +35,7 @@ public class JwtService {
     }
 
     public String createToken(User user) {
-        long expirationTimeMillis = 60000L; // 1 minute
+        long expirationTimeMillis = 3600000L; // 1 hour
         Date issuedAt = new Date();
         Date expirationTime = new Date(issuedAt.getTime() + expirationTimeMillis);
 
