@@ -1,18 +1,18 @@
 package com.ecommerce.userservice.service;
 
 import com.ecommerce.userservice.exceptions.UserNotFoundException;
-import com.ecommerce.userservice.models.TokenResponse;
 import com.ecommerce.userservice.models.User;
 import com.ecommerce.userservice.models.dto.UserDto;
 import com.ecommerce.userservice.repository.UserRepository;
 import com.ecommerce.userservice.service.mapper.UserMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -21,17 +21,13 @@ public class UserService {
 
     private final UserMapper userMapper;
 
-    private final PasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    private final JwtService jwtService;
-
-    public UserService(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder, JwtService jwtService){
+    @Autowired
+    public UserService(UserRepository userRepository, UserMapper userMapper){
         this.userRepository = userRepository;
         this.userMapper = userMapper;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
     }
-
 
     @Transactional
     public List<User> getUsers() throws DataAccessException {
@@ -46,12 +42,14 @@ public class UserService {
 
 
     @Transactional
-    public TokenResponse logIn(UserDto userDto) throws UserNotFoundException, DataAccessException{
-        return userRepository.findByEmail(userDto.getEmail())
-                .filter(user -> passwordEncoder.matches(userDto.getPassword(), user.getPassword()))
-                .map(user -> TokenResponse.builder()
-                        .token(jwtService.createToken(user))
-                        .build())
+    public User getById(Long id) throws UserNotFoundException {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+    }
+
+    @Transactional
+    public User getByEmail(String email) throws UserNotFoundException {
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 

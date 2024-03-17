@@ -2,7 +2,10 @@ package com.ecommerce.userservice.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
 import java.util.Date;
 
 @Getter
@@ -30,4 +33,5 @@ public class User {
     private Date birthDate;
 
     private String password;
+
 }

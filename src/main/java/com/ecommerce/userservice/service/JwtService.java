@@ -2,20 +2,19 @@ package com.ecommerce.userservice.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.Claim;
+import com.ecommerce.userservice.exceptions.InvalidPayloadException;
+import com.ecommerce.userservice.exceptions.UserNotFoundException;
+import com.ecommerce.userservice.models.TokenResponse;
 import com.ecommerce.userservice.models.User;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
+import com.ecommerce.userservice.models.dto.UserDto;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.security.Key;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Date;
-import java.util.function.Function;
+import java.util.Optional;
 
 @Service
 public class JwtService {
@@ -23,6 +22,11 @@ public class JwtService {
     @Value("${spring.custom.secret}")
     private String secret;
 
+    private final UserService userService;
+
+    public JwtService(UserService userService){
+        this.userService = userService;
+    }
 
     public String createToken(User user) {
         long expirationTimeMillis = 3600000L;
@@ -30,8 +34,7 @@ public class JwtService {
         Date expirationTime = new Date(issuedAt.getTime() + expirationTimeMillis);
 
         return JWT.create()
-                .withClaim("email", user.getEmail())
-                .withClaim("username", user.getUsername())
+                .withClaim("user_id", user.getId())
                 .withIssuer("e-commerce")
                 .withIssuedAt(issuedAt)
                 .withExpiresAt(expirationTime)
@@ -47,39 +50,31 @@ public class JwtService {
         return Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
     }
 
-    private Key getSignKey() {
-        byte[] keyBytes= Decoders.BASE64.decode(secret);
-        return Keys.hmacShaKeyFor(keyBytes);
+    public Long getUserIdClaim(String token) throws InvalidPayloadException {
+        return Optional.of(JWT.decode(token))
+                .map(d -> d.getClaim("user_id"))
+                .map(Claim::asLong)
+                .orElseThrow(() -> new InvalidPayloadException("Invalid payload"));
     }
 
-    public String extractEmail(String token) {
-        return extractClaim(token, Claims::getSubject);
+    public TokenResponse login(UserDto userDto) throws UserNotFoundException {
+       User user = userService.getByEmail(userDto.getEmail());
+       String token = createToken(user);
+
+       return TokenResponse.builder()
+               .token(token)
+               .build();
     }
 
-    public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+
+    public Boolean validateToken(String token) {
+        try{
+            Long id = getUserIdClaim(token);
+            return userService.getById(id) != null;
+        }catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
-    }
-
-    private Claims extractAllClaims(String token) {
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(getSignKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
-    private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
-
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractEmail(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-    }
 }

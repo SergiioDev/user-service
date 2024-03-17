@@ -51,20 +51,5 @@ public class UserController {
         }
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> logIn(@RequestBody UserDto userDto){
-        try {
-           TokenResponse tokenResponse = userService.logIn(userDto);
-           LOGGER.info("Token {} created for {} ",tokenResponse.getToken(), userDto.getEmail());
-            return new ResponseEntity<>(tokenResponse, HttpStatus.CREATED);
-        }catch (UserNotFoundException e) {
-            LOGGER.error("Error creating token for user {} cause: {} ", userDto.getEmail(), e.getMessage());
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }catch (DataAccessException e) {
-            LOGGER.error("Error creating token for user {} cause: {} ", userDto.getEmail(), e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
 
 }
