@@ -21,12 +21,13 @@ public class UserService {
 
     private final UserMapper userMapper;
 
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserService(UserRepository userRepository, UserMapper userMapper){
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     @Transactional
