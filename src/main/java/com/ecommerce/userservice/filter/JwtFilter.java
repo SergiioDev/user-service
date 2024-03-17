@@ -1,12 +1,10 @@
 package com.ecommerce.userservice.filter;
 
 import com.ecommerce.userservice.service.JwtService;
-import com.ecommerce.userservice.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 

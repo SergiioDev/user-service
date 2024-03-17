@@ -5,11 +5,14 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.ecommerce.userservice.controller.AuthController;
 import com.ecommerce.userservice.exceptions.InvalidPayloadException;
 import com.ecommerce.userservice.exceptions.UserNotFoundException;
 import com.ecommerce.userservice.models.TokenResponse;
 import com.ecommerce.userservice.models.User;
 import com.ecommerce.userservice.models.dto.UserDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -19,6 +22,7 @@ import java.util.Optional;
 
 @Service
 public class JwtService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtService.class);
     private final UserService userService;
 
     private final JWTVerifier jwtVerifier;
@@ -73,10 +77,11 @@ public class JwtService {
         try {
             DecodedJWT decodedJWT = jwtVerifier.verify(jwtToken);
             Long id = getUserIdClaim(decodedJWT);
-            userService.getById(id);
+            User user = userService.getById(id);
+            LOGGER.info("Token validated for user {}" ,user.getEmail());
             return true;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            LOGGER.error("Could not validate the token, error: {}",e.getMessage());
         }
         return false;
     }

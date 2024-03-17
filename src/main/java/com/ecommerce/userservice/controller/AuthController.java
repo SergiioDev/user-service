@@ -27,7 +27,7 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody UserDto userDto) {
         try{
             TokenResponse tokenResponse = jwtService.login(userDto);
-            LOGGER.info("Token created for user {}  token: {} ", userDto.getEmail(), tokenResponse.getToken());
+            LOGGER.info("Token created for user {}", userDto.getEmail());
             return new ResponseEntity<>(tokenResponse, HttpStatus.CREATED);
         }catch (Exception e) {
             LOGGER.info("Something happened when creating token for user {} cause: {}", userDto.getEmail(), e.getCause());
