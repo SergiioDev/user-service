@@ -1,13 +1,10 @@
 package com.ecommerce.userservice.controller;
 
-import com.ecommerce.userservice.exceptions.UserNotFoundException;
-import com.ecommerce.userservice.models.TokenResponse;
 import com.ecommerce.userservice.models.User;
 import com.ecommerce.userservice.models.dto.UserDto;
 import com.ecommerce.userservice.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +35,6 @@ public class UserController {
         }
     }
 
-
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody UserDto userDto){
         try{
@@ -50,6 +46,5 @@ public class UserController {
             return ResponseEntity.internalServerError().build();
         }
     }
-
 
 }
