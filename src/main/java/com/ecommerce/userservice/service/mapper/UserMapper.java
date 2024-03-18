@@ -1,6 +1,6 @@
 package com.ecommerce.userservice.service.mapper;
 
-import com.ecommerce.userservice.models.User;
+import com.ecommerce.userservice.models.entity.User;
 import com.ecommerce.userservice.models.dto.UserDto;
 import org.springframework.stereotype.Component;
 

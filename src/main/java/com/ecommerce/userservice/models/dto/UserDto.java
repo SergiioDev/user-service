@@ -1,7 +1,5 @@
 package com.ecommerce.userservice.models.dto;
 
-import com.ecommerce.userservice.models.User;
-import jakarta.persistence.GeneratedValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,6 +1,6 @@
 package com.ecommerce.userservice.controller;
 
-import com.ecommerce.userservice.models.User;
+import com.ecommerce.userservice.models.entity.User;
 import com.ecommerce.userservice.models.dto.UserDto;
 import com.ecommerce.userservice.service.UserService;
 import org.slf4j.Logger;

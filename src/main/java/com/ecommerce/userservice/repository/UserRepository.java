@@ -1,6 +1,6 @@
 package com.ecommerce.userservice.repository;
 
-import com.ecommerce.userservice.models.User;
+import com.ecommerce.userservice.models.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

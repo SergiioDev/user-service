@@ -8,7 +8,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.ecommerce.userservice.exceptions.InvalidPayloadException;
 import com.ecommerce.userservice.exceptions.UserNotFoundException;
 import com.ecommerce.userservice.models.TokenResponse;
-import com.ecommerce.userservice.models.User;
+import com.ecommerce.userservice.models.entity.User;
 import com.ecommerce.userservice.models.dto.UserDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
