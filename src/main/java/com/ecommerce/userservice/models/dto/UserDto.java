@@ -1,12 +1,10 @@
 package com.ecommerce.userservice.models.dto;
 
-import com.ecommerce.userservice.models.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 
 @Getter
