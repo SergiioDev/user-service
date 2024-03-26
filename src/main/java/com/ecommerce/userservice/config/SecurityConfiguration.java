@@ -1,7 +1,6 @@
 package com.ecommerce.userservice.config;
 
 import com.ecommerce.userservice.filter.JwtFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -43,13 +42,11 @@ public class SecurityConfiguration {
         http.csrf(AbstractHttpConfigurer::disable)
                 .userDetailsService(userDetailsService)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/ecommerce/v1/auth/login").permitAll()
+                        .requestMatchers("/ecommerce/v1/auth").permitAll()
                         .anyRequest()
                         .authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
        return http.build();
     }
-
-
 
 }
