@@ -35,16 +35,4 @@ public class UserController {
         }
     }
 
-    @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody UserDto userDto){
-        try{
-            User savedUser = userService.save(userDto);
-            LOGGER.info("User created with id {}", savedUser.getId());
-            return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
-        }catch (Exception e){
-            LOGGER.error("Something happened while retrieving users {}", e.getMessage());
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-
 }
