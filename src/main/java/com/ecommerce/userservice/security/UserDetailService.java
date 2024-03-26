@@ -1,6 +1,5 @@
 package com.ecommerce.userservice.security;
 
-import com.ecommerce.userservice.exceptions.UserNotFoundException;
 import com.ecommerce.userservice.models.entity.User;
 import com.ecommerce.userservice.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +21,13 @@ public class UserDetailService implements UserDetailsService {
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return UserPrinciple.build(user);
+    }
+
+    @Transactional
+    public UserDetails loadUserByEmail(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return UserPrinciple.build(user);
     }
